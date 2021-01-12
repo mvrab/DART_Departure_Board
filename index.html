@@ -1,0 +1,51 @@
+
+  <!DOCTYPE html>
+  <html>
+  <title>Spring Valley Departures</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="refresh" content="61">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-colors-safety.css">
+  <body bgcolor='black'>
+
+  <style>
+  div.compact {
+    line-height: 20px;
+  }
+  </style>
+
+
+  <div class="w3-row-padding w3-black">
+    <div class='w3-border-bottom w3-border-white'>
+      <h1>Spring Valley Station - Departures</h1>
+    </div>
+
+    <div class="w3-half">
+      <div class="w3-card-4">
+      <h1>Northbound</h1>
+
+{% for northentry in northtext %}
+    {{ northentry | safe }}
+{% endfor %}
+        
+      </div>
+    </div>
+
+    <div class="w3-half">
+      <div class="w3-card-4">
+      <h1>Southbound</h1>
+        
+{% for southentry in southtext %}
+    {{ southentry | safe }}
+{% endfor %}
+
+		
+      </div>
+    </div>
+
+
+
+  </div>
+
+  </body>
+  </html>
