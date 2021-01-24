@@ -4,6 +4,11 @@ import requests
 import re
 from bs4 import BeautifulSoup
 import datetime
+import webbrowser
+import os
+from threading import Timer
+from time import sleep
+
 
 def get_parameters(selectedtrain):
     ################
@@ -41,7 +46,7 @@ def get_parameters(selectedtrain):
     return (n1d, n1t, n1c)
 
 
-app = Flask('Spring Valley Station Departures')
+app = Flask('Spring Valley Train Times', template_folder='/home/pi/Downloads/v4/templates')
 
 @app.route('/')
 def index():
@@ -91,5 +96,12 @@ def index():
 
     return render_template('index.html', southtext=southtext, northtext=northtext)
 
+def open_browser():
+	sleep(30)
+	cmd = "chromium-browser --kiosk --force-device-scale-factor=1.00 http://127.0.0.1:5000"
+	os.system(cmd)
+#webbrowser.open_new('http://127.0.0.1:1921/')
+
 if __name__ == '__main__':
-    app.run()
+	Timer(1, open_browser).start();
+	app.run(port=5000)
