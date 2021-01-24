@@ -100,7 +100,6 @@ def open_browser():
 	sleep(30)
 	cmd = "chromium-browser --kiosk --force-device-scale-factor=1.00 http://127.0.0.1:5000"
 	os.system(cmd)
-#webbrowser.open_new('http://127.0.0.1:1921/')
 
 if __name__ == '__main__':
 	Timer(1, open_browser).start();
