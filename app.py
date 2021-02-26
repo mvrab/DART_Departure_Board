@@ -94,8 +94,13 @@ def index():
     
         northtext = northentry.split('\n')
         southtext = southentry.split('\n')
-    
-        return render_template('index.html', southtext=southtext, northtext=northtext)
+        
+        clock_time_obj = datetime.datetime.now()
+        clockstr = clock_time_obj.strftime("%I:%M %p")
+        if clockstr[0] == "0":
+            clockstr = clockstr[1:]
+        
+        return render_template('index.html', clockstr=clockstr, southtext=southtext, northtext=northtext)
     except Exception as error:
         return render_template('reload.html')
 
