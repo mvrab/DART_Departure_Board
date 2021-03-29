@@ -4,11 +4,13 @@ import requests
 import re
 from bs4 import BeautifulSoup
 import datetime
-import webbrowser
+#import webbrowser
 import os
-from threading import Timer
-from time import sleep
+#from threading import Timer
 
+#import logging
+#log = logging.getLogger('werkzeug')
+#log.setLevel(logging.ERROR)
 
 def get_parameters(selectedtrain):
     ################
@@ -46,10 +48,13 @@ def get_parameters(selectedtrain):
     return (n1d, n1t, n1c)
 
 
-app = Flask('Spring Valley Train Times', template_folder='/home/pi/Downloads/v4/templates')
+app = Flask('Spring Valley Train Times', template_folder='/home/pi/dart/templates')
+global refresh_counter
+refresh_counter = 0
 
 @app.route('/')
 def index():
+    global refresh_counter
     try:
         response = requests.get('https://m.dart.org/railSchedule.asp?switch=pushRailStops3&ddlRailStopsFrom=26672&option=1')
         soup = BeautifulSoup(response.text, 'html.parser')
@@ -65,7 +70,7 @@ def index():
                 southboundtrains.append(train)
         # getText() return the text between opening and closing tag
     
-        entrytemplate ='        <div class="w3-round-xlarge w3-safety-{{ n1c }}">\n          <div class="w3-row">\n            <div class="w3-col w3-dark-grey w3-right w3-text-white w3-center w3-round-xlarge compact" style="width:100px">\n              <h1><b>{{ n1t }}</b></h1>\n              <h4>Minutes</h4>\n            </div>\n            <div class="w3-rest w3-margin-left">\n              <h2>{{ n1d }}</h2>\n            </div>\n          </div>\n        </div>\n        <div class="w3-margin-bottom"></div>\n'
+        entrytemplate ='        <div class="w3-round-xlarge w3-safety-{{ n1c }}">\n          <div class="w3-row w3-display-container">\n            <div class="w3-col w3-dark-grey w3-right w3-text-white w3-center w3-round-xlarge compact" style="width:100px">\n              <h5 class="w3-margin-top"><b>{{ n1t }}</b></h5>\n              <h4>Minutes</h4>\n            </div>\n            <div class="w3-rest w3-margin-left w3-display-left">\n              <h1>{{ n1d }}</h1>\n            </div>\n          </div>\n        </div>\n        <div class="w3-margin-bottom"></div>\n'
     
     
         northentry = ''
@@ -99,16 +104,25 @@ def index():
         clockstr = clock_time_obj.strftime("%I:%M %p")
         if clockstr[0] == "0":
             clockstr = clockstr[1:]
+        refresh_counter = 0
         
         return render_template('index.html', clockstr=clockstr, southtext=southtext, northtext=northtext)
     except Exception as error:
-        return render_template('reload.html')
+        #print(error)
+        refresh_counter += 1
+        if refresh_counter>5:
+            os.system('sudo reboot')
+        clock_time_obj = datetime.datetime.now()
+        clockstr = clock_time_obj.strftime("%I:%M %p")
+        if clockstr[0] == "0":
+            clockstr = clockstr[1:]
+        return render_template('reload.html', clockstr=clockstr, attemptstr=str(refresh_counter))
 
-def open_browser():
-        sleep(30)
-        cmd = "chromium-browser --kiosk --force-device-scale-factor=1.00 http://127.0.0.1:5000"
-        os.system(cmd)
+#def open_browser():
+        #sleep(30)
+        #cmd = "chromium-browser --kiosk --force-device-scale-factor=1.00 http://127.0.0.1:5000"
+        #os.system(cmd)
 
 if __name__ == '__main__':
-        Timer(1, open_browser).start();
+        #Timer(1, open_browser).start();
         app.run(port=5000)
